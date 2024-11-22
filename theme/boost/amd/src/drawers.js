@@ -28,6 +28,7 @@ import {debounce} from 'core/utils';
 import {isSmall, isLarge} from 'core/pagehelpers';
 import Pending from 'core/pending';
 import {setUserPreference} from 'core_user/repository';
+import * as FocusLock from 'core/local/aria/focuslock';
 // The jQuery module is only used for interacting with Boostrap 4. It can we removed when MDL-71979 is integrated.
 import jQuery from 'jquery';
 
@@ -455,6 +456,7 @@ export default class Drawers {
         if (isSmall()) {
             getBackdrop().then(backdrop => {
                 backdrop.show();
+                FocusLock.trapFocus(this.drawerNode);
 
                 const pageWrapper = document.getElementById('page');
                 pageWrapper.style.overflow = 'hidden';
@@ -526,6 +528,7 @@ export default class Drawers {
             backdrop.hide();
 
             if (isSmall()) {
+                FocusLock.untrapFocus();
                 const pageWrapper = document.getElementById('page');
                 pageWrapper.style.overflow = 'visible';
             }
@@ -790,6 +793,7 @@ const registerListeners = () => {
                 getBackdrop().then(backdrop => backdrop.show()).catch();
             }
         } else {
+            FocusLock.untrapFocus();
             drawerMap.forEach(drawerInstance => {
                 enableDrawerTooltips(drawerInstance.drawerNode);
             });
